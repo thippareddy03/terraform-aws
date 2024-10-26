@@ -32,8 +32,25 @@ resource "aws_subnet" "private" {
 
 #creating internet gate way
 resource "aws_internet_gateway" "Interet_Gateway" {
-  vpc_id = aws_vpc.vpc_info.id
-  tags   = merge(var.IG.tags, { Name = var.IG.name })
+  vpc_id     = aws_vpc.vpc_info.id
+  tags       = merge(var.IG.tags, { Name = var.IG.name })
+  depends_on = [aws_vpc.vpc_info]
 
 }
+#Creation of public route table
+resource "aws_route_table" "public_route" {
+  count      = length(var.Public_Subnets) > 0 ? 1 : 0
+  vpc_id     = aws_vpc.vpc_info.id
+  tags       = merge(var.Public_Route.tags, { Name = var.Public_Route.name })
+  depends_on = [aws_vpc.vpc_info, aws_subnet.public]
+}
+#Creation of private route table
+resource "aws_route_table" "private_route" {
+  count      = length(var.Private_Subnets) > 0 ? 1 : 0
+  vpc_id     = aws_vpc.vpc_info.id
+  tags       = merge(var.Private_Route.tags, { Name = var.Private_Route.name })
+  depends_on = [aws_vpc.vpc_info, aws_subnet.private]
+}
+
+
 

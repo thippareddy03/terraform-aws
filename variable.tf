@@ -41,3 +41,23 @@ variable "IG" {
   description = "This value defines internet Gateway"
 
 }
+
+#Public route table
+variable "Public_Route" {
+  type = object({
+    name = string
+    tags = map(string)
+  })
+  description = "This defines public route table info"
+
+}
+
+#Private route table
+variable "Private_Route" {
+  type = object({
+    name = string
+    tags = map(string)
+  })
+  description = "This defines private route table info"
+
+}
