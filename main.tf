@@ -51,6 +51,20 @@ resource "aws_route_table" "private_route" {
   tags       = merge(var.Private_Route.tags, { Name = var.Private_Route.name })
   depends_on = [aws_vpc.vpc_info, aws_subnet.private]
 }
+#Creation of public route table association
+resource "aws_route_table_association" "public_association" {
+  count          = length(var.Public_Subnets) > 0 ? 1 : 0
+  subnet_id      = aws_subnet.public[count.index].id
+  route_table_id = aws_route_table.public_route[0].id
+  depends_on     = [aws_route_table.public_route]
+}
+#Creation of private route table association
+resource "aws_route_table_association" "private_association" {
+  count          = length(var.Private_Subnets) > 0 ? 1 : 0
+  subnet_id      = aws_subnet.private[count.index].id
+  route_table_id = aws_route_table.private_route[0].id
+  depends_on     = [aws_route_table.private_route]
+}
 
 
 
