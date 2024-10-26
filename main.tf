@@ -12,9 +12,8 @@ resource "aws_subnet" "public" {
   count             = length(var.Public_Subnets)
   cidr_block        = var.Public_Subnets[count.index].cidr_block
   availability_zone = var.Public_Subnets[count.index].availability_Zone
-  #tags              = var.Public_Subnets[count.index].tags
-  tags       = merge(var.Public_Subnets[count.index].tags, { Name = var.Public_Subnets[count.index].name })
-  depends_on = [aws_vpc.vpc_info]
+  tags              = merge(var.Public_Subnets[count.index].tags, { Name = var.Public_Subnets[count.index].name })
+  depends_on        = [aws_vpc.vpc_info]
 
 }
 
@@ -65,6 +64,71 @@ resource "aws_route_table_association" "private_association" {
   route_table_id = aws_route_table.private_route[0].id
   depends_on     = [aws_route_table.private_route]
 }
+#Adding public security groups and its rule
+
+resource "aws_security_group" "public" {
+  name        = "public_security_group"
+  description = "Security group for public access"
+  vpc_id      = aws_vpc.vpc_info.id
+}
+
+resource "aws_security_group" "private" {
+  name        = "private_security_group"
+  description = "Security group for private access"
+  vpc_id      = aws_vpc.vpc_info.id
+}
+
+resource "aws_security_group_rule" "public_Security_Group_ingress" {
+  security_group_id = aws_security_group.public.id
+  count             = length(var.public_Security_Group_ingress)
+  from_port         = var.public_Security_Group_ingress[count.index].from_port
+  to_port           = var.public_Security_Group_ingress[count.index].to_port
+  type              = "ingress"
+  protocol          = var.public_Security_Group_ingress[count.index].protocol
+  cidr_blocks       = var.public_Security_Group_ingress[count.index].cidr_block
+  depends_on        = [aws_security_group.public]
+
+}
+
+resource "aws_security_group_rule" "public_Security_Group_egress" {
+  security_group_id = aws_security_group.public.id
+  count             = length(var.public_Security_Group_egress)
+  from_port         = var.public_Security_Group_egress[count.index].from_port
+  to_port           = var.public_Security_Group_egress[count.index].to_port
+  type              = "egress"
+  protocol          = var.public_Security_Group_egress[count.index].protocol
+  cidr_blocks       = var.public_Security_Group_egress[count.index].cidr_block
+  depends_on        = [aws_security_group.public]
+
+}
+
+resource "aws_security_group_rule" "private_Security_Group_ingress" {
+  security_group_id = aws_security_group.private.id
+  count             = length(var.private_Security_Group_ingress)
+  from_port         = var.private_Security_Group_ingress[count.index].from_port
+  to_port           = var.private_Security_Group_ingress[count.index].to_port
+  type              = "ingress"
+  protocol          = var.private_Security_Group_ingress[count.index].protocol
+  cidr_blocks       = var.private_Security_Group_ingress[count.index].cidr_block
+  depends_on        = [aws_security_group.private]
+
+}
+
+resource "aws_security_group_rule" "private_Security_Group_egress" {
+  security_group_id = aws_security_group.private.id
+  count             = length(var.private_Security_Group_egress)
+  from_port         = var.private_Security_Group_egress[count.index].from_port
+  to_port           = var.private_Security_Group_egress[count.index].to_port
+  type              = "ingress"
+  protocol          = var.private_Security_Group_egress[count.index].protocol
+  cidr_blocks       = var.private_Security_Group_egress[count.index].cidr_block
+  depends_on        = [aws_security_group.private]
+
+}
+
+
+
+
 
 
 
