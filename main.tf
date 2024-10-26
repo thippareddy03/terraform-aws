@@ -13,7 +13,7 @@ resource "aws_subnet" "public" {
   cidr_block        = var.Public_Subnets[count.index].cidr_block
   availability_zone = var.Public_Subnets[count.index].availability_Zone
   #tags              = var.Public_Subnets[count.index].tags
-  tags = merge(var.Public_Subnets[count.index].tags, { Name = var.Public_Subnets[count.index].name })
+  tags       = merge(var.Public_Subnets[count.index].tags, { Name = var.Public_Subnets[count.index].name })
   depends_on = [aws_vpc.vpc_info]
 
 }
@@ -21,12 +21,19 @@ resource "aws_subnet" "public" {
 #Creating private subnets
 
 resource "aws_subnet" "private" {
-    vpc_id = aws_vpc.vpc_info.id
-    count = length(var.Private_Subnets)
-    cidr_block = var.Private_Subnets[count.index].cidr_block
-    availability_zone = var.Private_Subnets[count.index].availability_Zone
-    tags = merge(var.Private_Subnets[count.index].tags, {Name = var.Private_Subnets[count.index].name})
-    depends_on = [ aws_vpc.vpc_info ]
-  
+  vpc_id            = aws_vpc.vpc_info.id
+  count             = length(var.Private_Subnets)
+  cidr_block        = var.Private_Subnets[count.index].cidr_block
+  availability_zone = var.Private_Subnets[count.index].availability_Zone
+  tags              = merge(var.Private_Subnets[count.index].tags, { Name = var.Private_Subnets[count.index].name })
+  depends_on        = [aws_vpc.vpc_info]
+
+}
+
+#creating internet gate way
+resource "aws_internet_gateway" "Interet_Gateway" {
+  vpc_id = aws_vpc.vpc_info.id
+  tags   = merge(var.IG.tags, { Name = var.IG.name })
+
 }
 

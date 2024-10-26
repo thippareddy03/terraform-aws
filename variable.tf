@@ -23,11 +23,21 @@ variable "Public_Subnets" {
 #Private subnet variables
 
 variable "Private_Subnets" {
-    type = list(object({
-      name = string
-      cidr_block = string
-      availability_Zone = string
-      tags = map(string)
-    }))
+  type = list(object({
+    name              = string
+    cidr_block        = string
+    availability_Zone = string
+    tags              = map(string)
+  }))
   description = "This provide private subnet info"
+}
+
+# Internet Gateway
+variable "IG" {
+  type = object({
+    name = string
+    tags = map(string)
+  })
+  description = "This value defines internet Gateway"
+
 }
