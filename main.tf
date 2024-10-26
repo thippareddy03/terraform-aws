@@ -18,3 +18,15 @@ resource "aws_subnet" "public" {
 
 }
 
+#Creating private subnets
+
+resource "aws_subnet" "private" {
+    vpc_id = aws_vpc.vpc_info.id
+    count = length(var.Private_Subnets)
+    cidr_block = var.Private_Subnets[count.index].cidr_block
+    availability_zone = var.Private_Subnets[count.index].availability_Zone
+    tags = merge(var.Private_Subnets[count.index].tags, {Name = var.Private_Subnets[count.index].name})
+    depends_on = [ aws_vpc.vpc_info ]
+  
+}
+
