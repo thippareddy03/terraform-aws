@@ -126,7 +126,24 @@ resource "aws_security_group_rule" "private_Security_Group_egress" {
 
 }
 
+# Creation of ec2 instance using module
+module "ec2_instance" {
+  source = "terraform-aws-modules/ec2-instance/aws"
 
+  name = "My_Instance"
+
+  instance_type          = "t2.micro"
+  key_name               = "My_Key_Pair"
+  monitoring             = true
+  vpc_security_group_ids = ["sg-015e128ca6c7de548"]
+  subnet_id              = "subnet-0ae1b4264cb5f4b87"
+  ami                    = "ami-0866a3c8686eaeeba"
+
+  tags = {
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
 
 
 
